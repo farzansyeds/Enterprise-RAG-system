@@ -1,8 +1,14 @@
+torch
+torchvision
+torchaudio
 langchain
-langchain-community
-langchain-openai
+langchain-google-genai
+langchain-huggingface
+langchain-chroma
+langchain-text-splitters
 chromadb
 tiktoken
-pypdf
+pymupdf
 streamlit
 python-dotenv
+sentence-transformers

@@ -1,32 +1,34 @@
 import os
-from langchain_community.document_loaders import PyPDFLoader
+import re
+from langchain_community.document_loaders import DirectoryLoader
+from langchain_community.document_loaders import PyMuPDFLoader
 
 def load_documents(data_directory: str):
     """
-    Scans a directory for PDF files, loads them, and extracts the text.
+    Scans a directory recursively for files, loads them, and extracts the text.
+    Currently configured to load all PDFs using PyMuPDFLoader.
     """
-    documents = []
-    
-    # Check if the directory exists
     if not os.path.exists(data_directory):
         raise FileNotFoundError(f"The directory {data_directory} does not exist.")
         
-    print(f"Scanning '{data_directory}' for PDFs...")
+    print(f"Scanning '{data_directory}' for documents...")
     
-    # Loop through all files in the directory
-    for filename in os.listdir(data_directory):
-        if filename.endswith(".pdf"):
-            file_path = os.path.join(data_directory, filename)
-            print(f"Loading: {filename}")
+    # 1. Initialize the DirectoryLoader
+    # glob="**/*.pdf" ensures it searches recursively inside any subfolders too.
+    loader = DirectoryLoader(
+        path=data_directory,
+        glob="**/*.pdf", 
+        loader_cls=PyMuPDFLoader,
+        show_progress=True 
+    )
+    
+    # 2. Load all documents at once
+    docs = loader.load()
+    
+    # 3. Apply the post-processing fix to remove awkward line breaks
+    for doc in docs:
+        doc.page_content = re.sub(r'(?<!\n)\n(?!\n)', ' ', doc.page_content)
             
-            # PyPDFLoader extracts the text page by page
-            loader = PyPDFLoader(file_path)
-            documents.extend(loader.load())
-            
-    print(f"Successfully loaded {len(documents)} total pages.")
-    return documents
+    print(f"Successfully loaded {len(docs)} total document pages.")
+    return docs
 
-# Quick test (Will only run if you execute this specific file)
-if __name__ == "__main__":
-    # Create a 'data' folder in your root directory and put a test PDF in it
-    docs = load_documents("../data")
