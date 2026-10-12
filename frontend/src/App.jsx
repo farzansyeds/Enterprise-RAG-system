@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import './App.css' // Import the external CSS
+import './App.css'
 
 function App() {
   const [file, setFile] = useState(null)
@@ -10,25 +10,18 @@ function App() {
 
   const handleUpload = async (e) => {
     e.preventDefault()
-    if (!file) {
-      alert('Please choose a file first.')
-      return
-    }
+    if (!file) return alert('Please choose a file first.')
 
     setIndexing(true)
     const formData = new FormData()
     formData.append('file', file)
 
     try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
       if (!res.ok) throw new Error(`Upload failed: ${res.statusText}`)
       const data = await res.json()
       alert(data.message || 'Indexing complete!')
     } catch (err) {
-      console.error(err)
       alert(`Upload error: ${err.message}`)
     } finally {
       setIndexing(false)
@@ -43,6 +36,8 @@ function App() {
     setQuestion('')
     setLoading(true)
 
+    setChat((prev) => [...prev, { role: 'user', content: userPrompt }])
+
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -51,78 +46,147 @@ function App() {
       })
 
       if (!res.ok) throw new Error(`Server returned ${res.status}`)
-
       const data = await res.json()
+      
+      // let answerText = typeof data.answer === 'string' ? data.answer : 
+      //                  (data.answer?.content || JSON.stringify(data.answer))
 
-      let answerText = ''
-      if (typeof data.answer === 'string') {
-        answerText = data.answer
-      } else if (data.answer && typeof data.answer === 'object') {
-        answerText = data.answer.content || JSON.stringify(data.answer)
-      } else {
-        answerText = 'No response generated.'
+      let answerText = "";
+      
+      try {
+        let parsedData = data.answer;
+        
+        // 1. If the backend sent a stringified JSON array, parse it into a real array
+        if (typeof parsedData === 'string' && parsedData.trim().startsWith('[')) {
+          parsedData = JSON.parse(parsedData);
+        }
+        
+        // 2. Extract just the text from the Gemini complex structure
+        if (Array.isArray(parsedData) && parsedData[0] && parsedData[0].text) {
+          answerText = parsedData[0].text;
+        } 
+        // 3. Fallback for standard string responses
+        else if (typeof data.answer === 'string') {
+          answerText = data.answer;
+        } 
+        // 4. Fallback for generic objects
+        else {
+          answerText = data.answer?.content || JSON.stringify(data.answer);
+        }
+      } catch (err) {
+        // Ultimate fallback if parsing completely fails
+        answerText = typeof data.answer === 'string' ? data.answer : JSON.stringify(data.answer);
       }
 
-      setChat((prevChat) => [...prevChat, { q: userPrompt, a: answerText }])
+      setChat((prev) => [...prev, { role: 'ai', content: answerText }])
     } catch (err) {
-      console.error('Chat error:', err)
-      setChat((prevChat) => [
-        ...prevChat,
-        { q: userPrompt, a: `Error: Unable to fetch response (${err.message})` },
-      ])
+      setChat((prev) => [...prev, { role: 'ai', content: `Error: ${err.message}` }])
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="app-container">
-      <h1 className="app-header">Enterprise RAG System</h1>
-
-      <form onSubmit={handleUpload} className="upload-form">
-        <input 
-          type="file" 
-          accept=".pdf"
-          onChange={(e) => setFile(e.target.files[0])} 
-          className="file-input"
-        />
-        <button type="submit" disabled={indexing} className="primary-btn">
-          {indexing ? 'Indexing...' : 'Upload & Index'}
-        </button>
-      </form>
-
-      <div className="chat-window">
-        {chat.length === 0 && (
-          <p className="empty-state">Ask a question below to start chatting with your document.</p>
-        )}
-        
-        {chat.map((msg, i) => (
-          <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div className="chat-message user">
-              <div className="message-label">You</div>
-              <p className="message-content">{msg.q}</p>
-            </div>
-            <div className="chat-message ai">
-              <div className="message-label">AI Assistant</div>
-              <p className="message-content">{msg.a}</p>
-            </div>
-          </div>
-        ))}
-        {loading && <p className="loading-indicator">Thinking...</p>}
+    <div className="saas-dashboard">
+      {/* CSS-Only Animated AI Background */}
+      <div className="animated-bg">
+        <div className="glow-orb orb-1"></div>
+        <div className="glow-orb orb-2"></div>
+        <div className="particle p1"></div>
+        <div className="particle p2"></div>
+        <div className="particle p3"></div>
       </div>
 
-      <form onSubmit={handleChat} className="input-form">
-        <input
-          className="text-input"
-          value={question}
-          placeholder="Ask a question..."
-          onChange={(e) => setQuestion(e.target.value)}
-          disabled={loading}
-        />
-        <button type="submit" disabled={loading} className="primary-btn">
-          {loading ? 'Asking...' : 'Ask'}
-        </button>
-      </form>
+      <div className="content-wrapper">
+        
+        {/* Card 1: Header */}
+        <div className="card header-card">
+          {/* <div className="header-icon">✨</div> */}
+          <div className="header-text">
+          <h1><u>Retrieval-Augmented Generation Pipeline</u></h1>
+          </div>
+        </div>
+
+        {/* Card 2: Pipeline Steps */}
+        <div className="card steps-card" style={{ flexWrap: 'wrap' }}>
+          <div style={{ width: '100%', marginBottom: '1rem', color: 'var(--text-muted)' }}>
+            <b><u>WORKFLOW:</u></b>
+          </div>
+          
+          <div className="step">
+            <div className="step-badge active">1</div>
+            <div className="step-label">Document<br/>Upload</div>
+          </div>
+          <div className="step">
+            <div className="step-badge active">2</div>
+            <div className="step-label">Vector<br/>Embedding</div>
+          </div>
+          <div className="step">
+            <div className="step-badge active">3</div>
+            <div className="step-label">ChromaDB<br/>Store</div>
+          </div>
+          <div className="step">
+            <div className="step-badge active">4</div>
+            <div className="step-label">Gemini<br/>Inference</div>
+          </div>
+        </div>
+
+        {/* Card 3: Ingestion */}
+        <div className="card ingestion-card">
+          <h2><b><i>Knowledge Base Ingestion ⬇️</i></b></h2>
+          <p className="subtitle">Upload PDF documents to generate and store semantic vectors.</p>
+          
+          <form onSubmit={handleUpload} className="upload-box">
+            <input 
+              type="file" 
+              accept=".pdf"
+              onChange={(e) => setFile(e.target.files[0])} 
+              className="native-file-input"
+            />
+            <button type="submit" disabled={indexing} className="btn-upload">
+              {indexing ? 'Processing...' : 'Index Document'}
+            </button>
+          </form>
+        </div>
+
+        {/* Card 4: Inference / Chat */}
+        <div className="card chat-card">
+          <div className="chat-window">
+            {chat.length === 0 && !loading && (
+              <div className="empty-state">
+                <span className="brain-icon">🧠</span>
+                <p>System initialized. Ask a question to query the vector database.</p>
+              </div>
+            )}
+
+            {chat.map((msg, i) => (
+              <div key={i} className={`message ${msg.role}`}>
+                <div className="message-content">{msg.content}</div>
+              </div>
+            ))}
+
+            {loading && (
+              <div className="message ai typing">
+                <span className="dot"></span><span className="dot"></span><span className="dot"></span>
+              </div>
+            )}
+          </div>
+
+          <form onSubmit={handleChat} className="chat-input-row">
+            <input
+              className="query-input"
+              value={question}
+              placeholder="Query the vector database..."
+              onChange={(e) => setQuestion(e.target.value)}
+              disabled={loading}
+            />
+            <button type="submit" disabled={loading} className="btn-send">
+              Ask
+            </button>
+          </form>
+        </div>
+
+      </div>
     </div>
   )
 }
