@@ -11,7 +11,8 @@ from src.chunking import chunk_documents
 from src.retriever import retrieve_relevant_chunks
 from src.generator import generate_rag_response
 from langchain_chroma import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
+#from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import torch
 
 app = FastAPI()
@@ -43,8 +44,8 @@ async def upload_document(file: UploadFile = File(...)):
     chunks = chunk_documents(raw_docs)
     
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2",
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001",
         model_kwargs={'device': device}
     )
     
