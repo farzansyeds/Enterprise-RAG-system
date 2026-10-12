@@ -13,7 +13,7 @@ from src.generator import generate_rag_response
 from langchain_chroma import Chroma
 #from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-import torch
+#import torch
 
 app = FastAPI()
 
