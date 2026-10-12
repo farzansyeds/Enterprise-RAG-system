@@ -11,7 +11,7 @@ def get_vector_store():
     """
     #device = 'cuda' if torch.cuda.is_available() else 'cpu'
     embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/text-embedding-004",
+        model="models/gemini-embedding-001",
         #model_kwargs={'device': device}  # Runs similarity encoding on GPU
     )
     

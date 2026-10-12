@@ -29,7 +29,7 @@ def generate_data_store():
     #device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print("Initializing embedding model...")
     embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/text-embedding-004",
+        model="models/gemini-embedding-001",
         #model_kwargs={'device': device}
     )
     
