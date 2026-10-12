@@ -43,10 +43,10 @@ async def upload_document(file: UploadFile = File(...)):
     raw_docs = load_documents(DATA_DIR)
     chunks = chunk_documents(raw_docs)
     
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    #device = 'cuda' if torch.cuda.is_available() else 'cpu'
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/embedding-001",
-        model_kwargs={'device': device}
+       # model_kwargs={'device': device}
     )
     
     Chroma.from_documents(documents=chunks, embedding=embeddings, persist_directory=CHROMA_PATH)

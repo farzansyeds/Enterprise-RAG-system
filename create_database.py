@@ -1,8 +1,9 @@
 import os
 from dotenv import load_dotenv
-from langchain_huggingface import HuggingFaceEmbeddings
+#from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
-import torch
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+#import torch
 from src.document_loader import load_documents
 from src.chunking import chunk_documents
 
@@ -25,12 +26,12 @@ def generate_data_store():
     
     # 3. Initialize the Embedding Model
     # We use OpenAI's cost-effective and highly capable text-embedding-3-small model
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    #device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print("Initializing embedding model...")
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2",
-        model_kwargs={'device': device}
-        )
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001",
+        #model_kwargs={'device': device}
+    )
     
     # 4. Create and save the Vector Database
     print(f"Creating Chroma vector database at '{CHROMA_PATH}'...")
