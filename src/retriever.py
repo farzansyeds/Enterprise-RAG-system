@@ -1,6 +1,7 @@
 from langchain_chroma import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
+#from langchain_huggingface import HuggingFaceEmbeddings
 import torch
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 CHROMA_PATH = "vector_store"
 
@@ -9,8 +10,8 @@ def get_vector_store():
     Loads the persisted Chroma vector database from disk using GPU if available.
     """
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2",
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001",
         model_kwargs={'device': device}  # Runs similarity encoding on GPU
     )
     
