@@ -9,10 +9,10 @@ def get_vector_store():
     """
     Loads the persisted Chroma vector database from disk using GPU if available.
     """
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    #device = 'cuda' if torch.cuda.is_available() else 'cpu'
     embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/embedding-001",
-        model_kwargs={'device': device}  # Runs similarity encoding on GPU
+        model="models/text-embedding-004",
+        #model_kwargs={'device': device}  # Runs similarity encoding on GPU
     )
     
     db = Chroma(

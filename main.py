@@ -45,7 +45,7 @@ async def upload_document(file: UploadFile = File(...)):
     
     #device = 'cuda' if torch.cuda.is_available() else 'cpu'
     embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/embedding-001",
+        model="models/text-embedding-004",
        # model_kwargs={'device': device}
     )
     
